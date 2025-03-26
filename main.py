@@ -1,0 +1,1 @@
+# Depois de finalizar a etapa 3, criar uma função aqui que vai chamar todas as outras funções.
