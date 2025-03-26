@@ -1,33 +1,47 @@
-from playwright.sync_api import sync_playwright
+import os
 import requests
 import zipfile
-import os
+from playwright.sync_api import sync_playwright
 
-# Function to download a PDF
 def download_pdf(url, filename):
     response = requests.get(url)
     with open(filename, 'wb') as file:
         file.write(response.content)
 
-# Open the browser and click the links of the attachments
+# Caminho para a pasta "arquivos" (um nível acima de web_scraping)
+pasta_arquivos = os.path.join('..', 'arquivos')
+
+# Garante que a pasta exista (se não quiser criar automaticamente, remova esta linha)
+os.makedirs(pasta_arquivos, exist_ok=True)
+
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=False)
     page = browser.new_page()
     page.goto('https://www.gov.br/ans/pt-br/acesso-a-informacao/participacao-da-sociedade/atualizacao-do-rol-de-procedimentos')
-    variavelA = page.locator('a[data-mce-href="resolveuid/f710899c6c7a485ea62a1acc75d86c8c"]')
-    page.locator('a[data-mce-href="resolveuid/85adaa3de5464d8aadea11456bfb4f94"]')
+    url1 = page.locator('a[data-mce-href="resolveuid/85adaa3de5464d8aadea11456bfb4f94"]').get_attribute('href')
+    print(url1)
+
+    # Aqui criamos outra página, mas você poderia reaproveitar a mesma se preferir
+    page = browser.new_page()
+    page.goto('https://www.gov.br/ans/pt-br/acesso-a-informacao/participacao-da-sociedade/atualizacao-do-rol-de-procedimentos')
+    url2 = page.locator('a[data-mce-href="resolveuid/85adaa3de5464d8aadea11456bfb4f94"]').get_attribute('href')
+    print(url2)
     browser.close()
 
-# Download the PDFs
-for url, filename in zip(pdf_urls, pdf_filenames):
-    download_pdf(url, filename)
+# Define os caminhos completos dos arquivos (dentro de "arquivos")
+pdf1_path = os.path.join(pasta_arquivos, 'anexo_I.pdf')
+pdf2_path = os.path.join(pasta_arquivos, 'anexo_II.pdf')
+zip_path = os.path.join(pasta_arquivos, 'anexos.zip')
 
-# Create a ZIP file containing the downloaded PDFs
-zip_filename = "../arquivos/Anexos.zip"
-with zipfile.ZipFile(zip_filename, 'w') as zip_file:
-    for filename in pdf_filenames:
-        zip_file.write(filename)
+# Baixa os dois PDFs
+download_pdf(url1, pdf1_path)
+download_pdf(url2, pdf2_path)
 
-# Clean up the downloaded PDF files, if necessary
-for filename in pdf_filenames:
-    os.remove(filename)
+# Cria o arquivo ZIP na mesma pasta "arquivos"
+with zipfile.ZipFile(zip_path, 'w') as zipf:
+    zipf.write(pdf1_path, arcname='anexo_I.pdf')
+    zipf.write(pdf2_path, arcname='anexo_II.pdf')
+
+# Remove os PDFs, deixando somente o ZIP na pasta "arquivos"
+os.remove(pdf1_path)
+os.remove(pdf2_path)
