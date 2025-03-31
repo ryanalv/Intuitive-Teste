@@ -10,7 +10,7 @@ services:
     environment:
       POSTGRES_DB: teste_intuitive
       POSTGRES_USER: intuitive
-      POSTGRES_PASSWORD: senha_correta
+      POSTGRES_PASSWORD: 123456
     volumes:
       - pgdata:/var/lib/postgresql/data
 

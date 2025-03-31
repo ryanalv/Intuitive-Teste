@@ -27,7 +27,7 @@ def baixar_arquivos():
     anos = list(range(ano_subtraido, data_atual.year + 1))
 
     # Diretório para salvar os arquivos baixados
-    download_dir = './arquivos'
+    download_dir = '../arquivos/arquivos'
     os.makedirs(download_dir, exist_ok=True)
 
     for ano in anos:
@@ -42,7 +42,7 @@ def baixar_arquivos():
 
 def descompactar_arquivos():
     # Diretório onde os arquivos ZIP foram baixados
-    download_dir = './arquivos'
+    download_dir = '../arquivos/arquivos'
 
     # Lista todos os arquivos no diretório
     for item in os.listdir(download_dir):
